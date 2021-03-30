@@ -73,6 +73,7 @@ final class PostProcessorRegistrationDelegate {
 		// https://github.com/spring-projects/spring-framework/issues?q=PostProcessorRegistrationDelegate+is%3Aclosed+label%3A%22status%3A+declined%22
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
+		// 已经完成调用的后置处理器集合
 		Set<String> processedBeans = new HashSet<>();
 
 		if (beanFactory instanceof BeanDefinitionRegistry) {
@@ -99,6 +100,7 @@ final class PostProcessorRegistrationDelegate {
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+			// 获取实现了PriorityOrdered接口的BeanDefinitionRegistryPostProcessor实现类,排序之后,按顺序调用
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
@@ -109,10 +111,12 @@ final class PostProcessorRegistrationDelegate {
 			}
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			registryProcessors.addAll(currentRegistryProcessors);
+			// 目前是调用ConfigurationClassPostProcessor,解析“配置类”的包含的bean信息，变成beanDefinition存入map中
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry, beanFactory.getApplicationStartup());
 			currentRegistryProcessors.clear();
 
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
+			// 获取实现了Ordered接口的BeanDefinitionRegistryPostProcessor实现类,排序之后,按顺序调用
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (!processedBeans.contains(ppName) && beanFactory.isTypeMatch(ppName, Ordered.class)) {
@@ -126,6 +130,9 @@ final class PostProcessorRegistrationDelegate {
 			currentRegistryProcessors.clear();
 
 			// Finally, invoke all other BeanDefinitionRegistryPostProcessors until no further ones appear.
+			// 死循环获取其他所有的BeanDefinitionRegistryPostProcessor实现类,排序之后,按顺序调用
+			// 死循环BeanDefinitionRegistryPostProcessor实现类的原因是,前面的BeanDefinitionRegistryPostProcessor可能会注入新的实现类,
+			// 所以必须重新再获取并调用一遍
 			boolean reiterate = true;
 			while (reiterate) {
 				reiterate = false;
@@ -139,17 +146,22 @@ final class PostProcessorRegistrationDelegate {
 				}
 				sortPostProcessors(currentRegistryProcessors, beanFactory);
 				registryProcessors.addAll(currentRegistryProcessors);
+				// 遍历BeanDefinitionRegistryPostProcessor的实现类,调用postProcessBeanDefinitionRegistry()
 				invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry, beanFactory.getApplicationStartup());
 				currentRegistryProcessors.clear();
 			}
 
 			// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
+			// 遍历BeanDefinitionRegistryPostProcessor实现类,调用postProcessBeanFactory()
+			// 对于ConfigurationClassPostProcessor,生成“配置”类(@Configuration)的代理类
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
+			// 遍历非BeanDefinitionRegistryPostProcessor实现类(自己加进来的),调用postProcessBeanFactory(),基本不会执行
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
 		}
 
 		else {
 			// Invoke factory processors registered with the context instance.
+			// 遍历非BeanDefinitionRegistryPostProcessor实现类(自己加进来的),调用postProcessBeanFactory(),基本不会执行
 			invokeBeanFactoryPostProcessors(beanFactoryPostProcessors, beanFactory);
 		}
 
@@ -164,10 +176,12 @@ final class PostProcessorRegistrationDelegate {
 		List<String> orderedPostProcessorNames = new ArrayList<>();
 		List<String> nonOrderedPostProcessorNames = new ArrayList<>();
 		for (String ppName : postProcessorNames) {
+			// 跳过前面已经处理过的BeanFactoryPostProcessor实现类
 			if (processedBeans.contains(ppName)) {
 				// skip - already processed in first phase above
 			}
 			else if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
+				// 通过beanFactory的getBean(),实例化BeanFactoryPostProcessor
 				priorityOrderedPostProcessors.add(beanFactory.getBean(ppName, BeanFactoryPostProcessor.class));
 			}
 			else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {

@@ -550,20 +550,26 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			// 获取BeanFactory,其实是DefaultListableBeanFactory
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			// 设置BeanFactory的类加载器，添加几个BeanPostProcessor，手动注册几个特殊的bean
 			prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				// 扩展点,可以对beanFactory做修改
 				postProcessBeanFactory(beanFactory);
 
 				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
 				// Invoke factory processors registered as beans in the context.
+				// 实例化BeanFactoryPostProcessor(new应用上下文的时候注册的beanDefinition)并调用,作用是修改beanDefinition的信息
+				// 例如internalConfigurationAnnotationProcessor,用来解析@Configuration注解类管辖的beanDefinition信息
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				// 实例化各种BeanPostProcessors,并注册到beanFactory的beanPostProcessors属性中
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
 
@@ -571,12 +577,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
+				// 初始化事件广播器(给applicationEventMulticaster赋值)
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
 				onRefresh();
 
 				// Check for listener beans and register them.
+				// 注册监听器(非@EventListener注解方式,注册的是实现了ApplicationListener接口的类)
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
