@@ -420,13 +420,25 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		return (T) bean;
 	}
 
+	//bean工厂是否包含一个给定name的bean definition，或者外部被注册的单例bean？
+	//如果name是一个别名，会被转换成对应的beanName
+	//如果工厂是有层级的，那么当工厂实例中找不到这个bean时，就会去父工厂中查找
+	//如果找到匹配name的bean definition或者单例，那么这个方法会返回true
+	//不管这个bean definition是具体的还是抽象的，提前加载还是懒加载，是否在范围中。
+	//因此，注意从这个方法中返回的true值并不代表从getBean方法中能够获取一个同名称的实例
 	@Override
 	public boolean containsBean(String name) {
+		//对name进行必要的转换
 		String beanName = transformedBeanName(name);
+		//singletonObjects或者beanDefinitionMap中已注册beanName则进入条件
+		//说明该beanName有对应的bean definition，或者单例bean
 		if (containsSingleton(beanName) || containsBeanDefinition(beanName)) {
+			//name开头不为&返回true，如果带了&但是是FactoryBean也返回true
+			//要注意下FactoryBean和BeanFactory的区别，可以看下文参考链接
 			return (!BeanFactoryUtils.isFactoryDereference(name) || isFactoryBean(name));
 		}
 		// Not found -> check parent.
+		// 如果没有找到对应beanName的bean或者bean definition，那么从父工厂查找
 		BeanFactory parentBeanFactory = getParentBeanFactory();
 		return (parentBeanFactory != null && parentBeanFactory.containsBean(originalBeanName(name)));
 	}
@@ -1253,8 +1265,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * and resolving aliases to canonical names.
 	 * @param name the user-specified name
 	 * @return the transformed bean name
+	 *
+	 * 返回bean name，剥离factory dereference 前缀，并将别名解析为bean name
 	 */
 	protected String transformedBeanName(String name) {
+		//总的来说，如果name代表factory，那么name前就带有&前缀，去掉此前缀
+		//如果这个name是beanName，则直接返回，如果name是alias，在aliasMap中查找对应的beanName，再返回
 		return canonicalName(BeanFactoryUtils.transformedBeanName(name));
 	}
 

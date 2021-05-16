@@ -68,6 +68,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see #autowire
 	 * @see #autowireBeanProperties
 	 */
+	//  这个常量表明工厂没有自动装配的Bean
 	int AUTOWIRE_NO = 0;
 
 	/**
@@ -77,6 +78,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see #autowire
 	 * @see #autowireBeanProperties
 	 */
+	//表明根据名称自动装配
 	int AUTOWIRE_BY_NAME = 1;
 
 	/**
@@ -86,6 +88,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see #autowire
 	 * @see #autowireBeanProperties
 	 */
+	//表明根据类型自动装配
 	int AUTOWIRE_BY_TYPE = 2;
 
 	/**
@@ -94,6 +97,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see #createBean
 	 * @see #autowire
 	 */
+	//表明根据构造方法装配
 	int AUTOWIRE_CONSTRUCTOR = 3;
 
 	/**

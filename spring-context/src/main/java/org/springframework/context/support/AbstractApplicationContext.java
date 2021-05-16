@@ -684,17 +684,30 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Configure the factory's standard context characteristics,
 	 * such as the context's ClassLoader and post-processors.
 	 * @param beanFactory the BeanFactory to configure
+	 *
+	 * 配置工厂的标准上下文特征，比如上下文的ClassLoader和post-processors
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
+		// 告知内部的bean工厂，使用上下文的类加载器
 		beanFactory.setBeanClassLoader(getClassLoader());
 		if (!shouldIgnoreSpel) {
+			//设置bean表达式解析器，
+			//StandardBeanExpressionResolver内部expressionParser属性默认SpelExpressionParser类型
+			//spel = spring el表达式
 			beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 		}
+		//将ResourceEditorRegistrar实例添加到工厂的propertyEditorRegistrars属性中，
+		//propertyEditorRegistrars是一个LinkedHashSet，里面的元素将会应用到工厂bean中
+		//ResourceEditorRegistrar持有上下文和environment的引用
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
-		// Configure the bean factory with context callbacks.
+		//Configure the bean factory with context callbacks.
+		//使用上下文回调配置bean 工厂
+		//在工厂的beanPostProcessor属性中添加处理器，beanPostProcessor是一个ArrayList
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
+		//在工厂的ignoredDependencyInterfaces属性中添加Aware系列接口，
+		//ignoredDependencyInterfaces是一个HashSet
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
 		beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
