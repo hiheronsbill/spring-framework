@@ -439,17 +439,21 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public Map<String, Object> getSystemProperties() {
 		try {
+			// 调用System api获取所有的jvm系统属性
 			return (Map) System.getProperties();
 		}
 		catch (AccessControlException ex) {
+			// 如果设置了访问权限控制不能访问所有属性，则将返回惰性只读的属性map
 			return (Map) new ReadOnlySystemAttributesMap() {
 				@Override
 				@Nullable
 				protected String getSystemAttribute(String attributeName) {
 					try {
+						// 只获取指定的属性
 						return System.getProperty(attributeName);
 					}
 					catch (AccessControlException ex) {
+						// 如果仍然无法访问，则返回null，表示没有该属性
 						if (logger.isInfoEnabled()) {
 							logger.info("Caught AccessControlException when accessing system property '" +
 									attributeName + "'; its value will be returned [null]. Reason: " + ex.getMessage());
@@ -464,13 +468,16 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	@Override
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public Map<String, Object> getSystemEnvironment() {
+		// 如果设置禁止访问环境变量，将返回空。抑制访问环境变量可以通过系统属性spring.getenv.ignore设置：true/false，默认是非抑制
 		if (suppressGetenvAccess()) {
 			return Collections.emptyMap();
 		}
 		try {
+			// 调用System api获取返回所有的环境变量
 			return (Map) System.getenv();
 		}
 		catch (AccessControlException ex) {
+			// 同jvm系统属性一样，惰性只读特定的环境变量
 			return (Map) new ReadOnlySystemAttributesMap() {
 				@Override
 				@Nullable
@@ -621,6 +628,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 
 	@Override
 	public String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
+		// 委托PropertyResolver解析
 		return this.propertyResolver.resolveRequiredPlaceholders(text);
 	}
 

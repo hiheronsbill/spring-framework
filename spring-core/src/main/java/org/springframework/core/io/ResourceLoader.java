@@ -64,6 +64,7 @@ public interface ResourceLoader {
 	 * @see Resource#exists()
 	 * @see Resource#getInputStream()
 	 */
+	// 根据资源路径加载resource对象
 	Resource getResource(String location);
 
 	/**
@@ -76,6 +77,7 @@ public interface ResourceLoader {
 	 * @see org.springframework.util.ClassUtils#getDefaultClassLoader()
 	 * @see org.springframework.util.ClassUtils#forName(String, ClassLoader)
 	 */
+	// ResourceLoader是利用java的类加载器实现资源的加载
 	@Nullable
 	ClassLoader getClassLoader();
 

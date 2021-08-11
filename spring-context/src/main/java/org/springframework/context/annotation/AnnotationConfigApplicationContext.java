@@ -96,6 +96,8 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 *                         {@link Configuration @Configuration} classes
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
+		// 添加了默认的postProcessor到beanDefinition中（如configuration、autowired等等）
+		// 将@Component注解加入到includeFilters
 		this();
 		register(componentClasses);
 		refresh();

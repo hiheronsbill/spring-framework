@@ -108,7 +108,6 @@ public interface BeanDefinitionRegistry extends AliasRegistry {
 	 * @param beanName the name to check
 	 * @return whether the given bean name is already in use
 	 */
-	//返回本容器内所有注册的Bean定义名称
 	boolean isBeanNameInUse(String beanName);
 
 }

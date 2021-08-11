@@ -33,6 +33,7 @@ public interface PropertyResolver {
 	 * Return whether the given property key is available for resolution,
 	 * i.e. if the value for the given key is not {@code null}.
 	 */
+	// 判断源中是否包含该key的属性
 	boolean containsProperty(String key);
 
 	/**
@@ -43,6 +44,7 @@ public interface PropertyResolver {
 	 * @see #getProperty(String, Class)
 	 * @see #getRequiredProperty(String)
 	 */
+	// 获取源中的key属性的值
 	@Nullable
 	String getProperty(String key);
 
@@ -88,6 +90,7 @@ public interface PropertyResolver {
 	 * targetType (never {@code null}).
 	 * @throws IllegalStateException if the given key cannot be resolved
 	 */
+	// 获取并转换成目标类型
 	<T> T getRequiredProperty(String key, Class<T> targetType) throws IllegalStateException;
 
 	/**
@@ -99,6 +102,7 @@ public interface PropertyResolver {
 	 * @throws IllegalArgumentException if given text is {@code null}
 	 * @see #resolveRequiredPlaceholders
 	 */
+	// 解析占位，主要被应用在解析resource路径中的占位、@Value注解中的占位和Bean定义中的占位
 	String resolvePlaceholders(String text);
 
 	/**

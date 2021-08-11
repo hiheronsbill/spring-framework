@@ -84,6 +84,8 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				}
 			}
+			// 通过BeanUtils进行实例化，这个BeanUtils实例化是通过Constructor来实例化Bean的
+			// 在BeanUtils中可以看到具体的调用ctor.newInstance(ages)
 			return BeanUtils.instantiateClass(constructorToUse);
 		}
 		else {

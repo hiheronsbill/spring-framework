@@ -1,5 +1,6 @@
 package com.debug.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -7,6 +8,9 @@ import org.springframework.stereotype.Component;
  * @date 2021/3/30 - 10:45 下午
  */
 
-@Component
+//@Component
 public class UserService {
+
+//	@Autowired
+//	private OrderService orderService;
 }

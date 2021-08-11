@@ -46,7 +46,7 @@ import org.springframework.util.Assert;
 public abstract class AopConfigUtils {
 
 	/**
-	 * The bean name of the internally managed auto-proxy creator.
+	 * The bean name of the internally managed auto-proxy creator.internalAutoProxyCreator
 	 */
 	public static final String AUTO_PROXY_CREATOR_BEAN_NAME =
 			"org.springframework.aop.config.internalAutoProxyCreator";

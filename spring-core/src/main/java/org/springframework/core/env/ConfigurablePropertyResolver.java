@@ -55,16 +55,19 @@ public interface ConfigurablePropertyResolver extends PropertyResolver {
 	 * @see #getConversionService()
 	 * @see org.springframework.core.convert.converter.ConverterRegistry#addConverter
 	 */
+	// 设置转换服务，转换服务是Spring体系中非常重要的基础组件。用于转换解析出的property类型
 	void setConversionService(ConfigurableConversionService conversionService);
 
 	/**
 	 * Set the prefix that placeholders replaced by this resolver must begin with.
 	 */
+	// 设置占位前缀
 	void setPlaceholderPrefix(String placeholderPrefix);
 
 	/**
 	 * Set the suffix that placeholders replaced by this resolver must end with.
 	 */
+	// 设置占位后缀
 	void setPlaceholderSuffix(String placeholderSuffix);
 
 	/**
@@ -72,6 +75,7 @@ public interface ConfigurablePropertyResolver extends PropertyResolver {
 	 * resolver and their associated default value, or {@code null} if no such
 	 * special character should be processed as a value separator.
 	 */
+	// 设置property中中key-pair分割符
 	void setValueSeparator(@Nullable String valueSeparator);
 
 	/**
@@ -85,6 +89,7 @@ public interface ConfigurablePropertyResolver extends PropertyResolver {
 	 * unresolvable placeholders.
 	 * @since 3.2
 	 */
+	// 设置是否忽略嵌套占位的解析
 	void setIgnoreUnresolvableNestedPlaceholders(boolean ignoreUnresolvableNestedPlaceholders);
 
 	/**

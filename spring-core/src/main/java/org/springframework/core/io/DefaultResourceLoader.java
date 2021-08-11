@@ -47,9 +47,10 @@ import org.springframework.util.StringUtils;
  */
 public class DefaultResourceLoader implements ResourceLoader {
 
+	// 类加载器，可以编程式设置
 	@Nullable
 	private ClassLoader classLoader;
-
+	// 协议解析器集合
 	private final Set<ProtocolResolver> protocolResolvers = new LinkedHashSet<>(4);
 
 	private final Map<Class<?>, Map<Resource, ?>> resourceCaches = new ConcurrentHashMap<>(4);
@@ -105,6 +106,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	 * @since 4.3
 	 * @see #getProtocolResolvers()
 	 */
+	// 增加协议解析器
 	public void addProtocolResolver(ProtocolResolver resolver) {
 		Assert.notNull(resolver, "ProtocolResolver must not be null");
 		this.protocolResolvers.add(resolver);
@@ -139,31 +141,34 @@ public class DefaultResourceLoader implements ResourceLoader {
 		this.resourceCaches.clear();
 	}
 
-
+	// 加载单个资源实现
 	@Override
 	public Resource getResource(String location) {
 		Assert.notNull(location, "Location must not be null");
-
+		// 遍历资源解析器，使用解析器加载资源，如果加载成功，则返回资源
 		for (ProtocolResolver protocolResolver : getProtocolResolvers()) {
 			Resource resource = protocolResolver.resolve(location, this);
 			if (resource != null) {
 				return resource;
 			}
 		}
-
+		// 资源路径以"/"开头，表示是类路径上下文资源ClasspathContextResource
 		if (location.startsWith("/")) {
 			return getResourceByPath(location);
 		}
+		// 资源以"classpath:"开头，表示是类路径资源ClasspathResource
 		else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
 			return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 		}
 		else {
+			// 否则认为是路径时URL，尝试作为URL解析
 			try {
 				// Try to parse the location as a URL...
 				URL url = new URL(location);
 				return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
 			}
 			catch (MalformedURLException ex) {
+				// 如果不是URL，则再次作为类路径上下文资源ClasspathContextResource
 				// No URL -> resolve as resource path.
 				return getResourceByPath(location);
 			}

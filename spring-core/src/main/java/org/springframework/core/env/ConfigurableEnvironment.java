@@ -116,6 +116,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * variables.
 	 * @see AbstractEnvironment#customizePropertySources
 	 */
+	// 获取属性源集合，利用属性源集合可以操作Environment的properties
 	MutablePropertySources getPropertySources();
 
 	/**
@@ -131,6 +132,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * to a property, {@code null} will be returned and an INFO-level log message will be
 	 * issued noting the exception.
 	 */
+	// 获取jvm系统属性
 	Map<String, Object> getSystemProperties();
 
 	/**
@@ -146,6 +148,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * to a property, {@code null} will be returned and an INFO-level log message will be
 	 * issued noting the exception.
 	 */
+	// 获取环境变量
 	Map<String, Object> getSystemEnvironment();
 
 	/**
@@ -166,6 +169,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * @since 3.1.2
 	 * @see org.springframework.context.support.AbstractApplicationContext#setParent
 	 */
+	// 合并另一个环境，主要用在父子容器中，子容器继承合并父容器的Environment
 	void merge(ConfigurableEnvironment parent);
 
 }

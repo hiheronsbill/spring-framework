@@ -277,28 +277,37 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	@Override
 	public Resource[] getResources(String locationPattern) throws IOException {
 		Assert.notNull(locationPattern, "Location pattern must not be null");
+		// 1.路径模式是否以classpath*开头
 		if (locationPattern.startsWith(CLASSPATH_ALL_URL_PREFIX)) {
 			// a class path resource (multiple resources for same name possible)
+			// 路径模式是否为指定模式，这里指定模式是Ant-Style，即判断路径模式是否为Ant-Style
 			if (getPathMatcher().isPattern(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()))) {
 				// a class path resource pattern
+				// 1-1.如果是Ant-Style，则在所有的类路径上查找匹配该模式的资源
 				return findPathMatchingResources(locationPattern);
 			}
 			else {
+				// 1-2.如果不是Ant-Style，则在所有类路径上查找精确匹配该名称的的资源
 				// all class path resources with the given name
 				return findAllClassPathResources(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()));
 			}
 		}
+		// 2.不是以classpath*开头
 		else {
 			// Generally only look for a pattern after a prefix here,
 			// and on Tomcat only after the "*/" separator for its "war:" protocol.
+			// tomcat的war协议比较特殊，路径模式在war协议的*/后面，需要截取*/的路径模式
 			int prefixEnd = (locationPattern.startsWith("war:") ? locationPattern.indexOf("*/") + 1 :
 					locationPattern.indexOf(':') + 1);
+			// 判断路径模式是否为指定的模式，这里是Ant-Style，即判断路径模式是否为Ant-Style
 			if (getPathMatcher().isPattern(locationPattern.substring(prefixEnd))) {
 				// a file pattern
+				// 2-1.是指定的路径模式，根据模式查找匹配的资源
 				return findPathMatchingResources(locationPattern);
 			}
 			else {
 				// a single resource with the given name
+				// 2-2.如果不是Ant-Style，则认为是单个资源路径，使用ResourceLoader加载单个资源
 				return new Resource[] {getResourceLoader().getResource(locationPattern)};
 			}
 		}
@@ -491,13 +500,21 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @see #doFindPathMatchingFileResources
 	 * @see org.springframework.util.PathMatcher
 	 */
+	// 根据给定模式通过ant风格匹配器寻找所有匹配的资源，locationPattern为路径模式。
+	// 支持从文件系统、jar、zip中寻找资源
 	protected Resource[] findPathMatchingResources(String locationPattern) throws IOException {
+		// 截取根路径，即取ant通配符之前的路径部分
 		String rootDirPath = determineRootDir(locationPattern);
+		// 从通配符位置开始，截取路径的后续部分（子模式）
 		String subPattern = locationPattern.substring(rootDirPath.length());
+		// 从根路径部分获取所有的资源
 		Resource[] rootDirResources = getResources(rootDirPath);
+		// 在spring中对于集合使用有个良好习惯，初始化时始终指定集合大小
 		Set<Resource> result = new LinkedHashSet<>(16);
+		// 遍历根路径下的所有资源与子模式进行匹配，如果匹配成功，则符合路径模式的资源加入result结果集中
 		for (Resource rootDirResource : rootDirResources) {
 			rootDirResource = resolveRootDirResource(rootDirResource);
+			// 获取资源的URL
 			URL rootDirUrl = rootDirResource.getURL();
 			if (equinoxResolveMethod != null && rootDirUrl.getProtocol().startsWith("bundle")) {
 				URL resolvedUrl = (URL) ReflectionUtils.invokeMethod(equinoxResolveMethod, null, rootDirUrl);
@@ -506,12 +523,15 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 				}
 				rootDirResource = new UrlResource(rootDirUrl);
 			}
+			// 如果URL是vfs协议...，这里暂时不看这种协议，使用情况较少
 			if (rootDirUrl.getProtocol().startsWith(ResourceUtils.URL_PROTOCOL_VFS)) {
 				result.addAll(VfsResourceMatchingDelegate.findMatchingResources(rootDirUrl, subPattern, getPathMatcher()));
 			}
+			// 如果是jar协议（代表是jar包中的资源）
 			else if (ResourceUtils.isJarURL(rootDirUrl) || isJarResource(rootDirResource)) {
 				result.addAll(doFindPathMatchingJarResources(rootDirResource, rootDirUrl, subPattern));
 			}
+			// 如果都不是，则从文件系统系统中查找
 			else {
 				result.addAll(doFindPathMatchingFileResources(rootDirResource, subPattern));
 			}

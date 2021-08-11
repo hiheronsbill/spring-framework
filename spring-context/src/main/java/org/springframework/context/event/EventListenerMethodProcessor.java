@@ -51,6 +51,11 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
+ *  这个后置处理器, 主要是处理 @EventListener 注解的.
+ *  1. 解析 @EventListener , 获取拦截方法
+ *  2. 对拦截方法进行转换, 变成 ApplicationListener
+ *  3. 将转换的 ApplicationListener, 放到spring容器中
+ *
  * Registers {@link EventListener} methods as individual {@link ApplicationListener} instances.
  * Implements {@link BeanFactoryPostProcessor} (as of 5.1) primarily for early retrieval,
  * avoiding AOP checks for this processor bean and its {@link EventListenerFactory} delegates.
@@ -113,6 +118,7 @@ public class EventListenerMethodProcessor
 		Map<String, EventListenerFactory> beans = beanFactory.getBeansOfType(EventListenerFactory.class, false, false);
 		List<EventListenerFactory> factories = new ArrayList<>(beans.values());
 		AnnotationAwareOrderComparator.sort(factories);
+		//DefaultEventListenerFactory
 		this.eventListenerFactories = factories;
 	}
 
@@ -169,6 +175,7 @@ public class EventListenerMethodProcessor
 
 			Map<Method, EventListener> annotatedMethods = null;
 			try {
+				//获取标注了 @EventListener 注解的监听方法
 				annotatedMethods = MethodIntrospector.selectMethods(targetType,
 						(MethodIntrospector.MetadataLookup<EventListener>) method ->
 								AnnotatedElementUtils.findMergedAnnotation(method, EventListener.class));
@@ -196,11 +203,13 @@ public class EventListenerMethodProcessor
 					for (EventListenerFactory factory : factories) {
 						if (factory.supportsMethod(method)) {
 							Method methodToUse = AopUtils.selectInvocableMethod(method, context.getType(beanName));
+							//为监听方法创建 ApplicationListener
 							ApplicationListener<?> applicationListener =
 									factory.createApplicationListener(beanName, targetType, methodToUse);
 							if (applicationListener instanceof ApplicationListenerMethodAdapter) {
 								((ApplicationListenerMethodAdapter) applicationListener).init(context, this.evaluator);
 							}
+							//将创建的 ApplicationListener 加入到容器中
 							context.addApplicationListener(applicationListener);
 							break;
 						}

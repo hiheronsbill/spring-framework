@@ -83,6 +83,7 @@ public interface Environment extends PropertyResolver {
 	 * @see ConfigurableEnvironment#setActiveProfiles
 	 * @see AbstractEnvironment#ACTIVE_PROFILES_PROPERTY_NAME
 	 */
+	// 获取当前上下文生效应用的profile
 	String[] getActiveProfiles();
 
 	/**
@@ -92,6 +93,7 @@ public interface Environment extends PropertyResolver {
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 * @see AbstractEnvironment#DEFAULT_PROFILES_PROPERTY_NAME
 	 */
+	// 获取当前上下文默认的profile
 	String[] getDefaultProfiles();
 
 	/**
@@ -108,6 +110,7 @@ public interface Environment extends PropertyResolver {
 	 * @see #acceptsProfiles(Profiles)
 	 * @deprecated as of 5.1 in favor of {@link #acceptsProfiles(Profiles)}
 	 */
+	// 判断是否接受某个profile，用于决定bean定义属于哪个profile
 	@Deprecated
 	boolean acceptsProfiles(String... profiles);
 
