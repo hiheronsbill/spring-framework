@@ -360,7 +360,7 @@ import org.springframework.stereotype.Component;
  * &#064;ContextConfiguration(classes = {AppConfig.class, DatabaseConfig.class})
  * public class MyTests {
  *
- *     &#064;Autowired MyBean myBean;
+ *     &#064;Autowired MyBean myBean;ConfigurationClassPostProcessor
  *
  *     &#064;Autowired DataSource dataSource;
  *

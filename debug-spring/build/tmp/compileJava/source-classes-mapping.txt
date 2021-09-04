@@ -2,8 +2,8 @@ com/debug/service/CalMath.java
  com.debug.service.CalMath
 com/debug/service/A.java
  com.debug.service.A
-com/debug/DebugConfig.java
- com.debug.DebugConfig
+com/debug/entity/Red.java
+ com.debug.entity.Red
 com/debug/processor/MethodBeforePostProcessor.java
  com.debug.processor.MethodBeforePostProcessor
  com.debug.processor.MethodBeforePostProcessor$1
@@ -13,27 +13,27 @@ com/debug/entity/TestBean.java
  com.debug.entity.TestBean
 com/debug/entity/RainBow.java
  com.debug.entity.RainBow
-com/debug/config/AppConfig.java
- com.debug.config.AppConfig
+com/debug/aware/MyApplicationContextAware.java
+ com.debug.aware.MyApplicationContextAware
 com/debug/config/MyImportSelector.java
  com.debug.config.MyImportSelector
 com/debug/entity/Blue.java
  com.debug.entity.Blue
-com/debug/aop/AopAspect.java
- com.debug.aop.AopAspect
+com/debug/config/MyImportBeanDefinitionRegistry.java
+ com.debug.config.MyImportBeanDefinitionRegistry
 com/debug/processor/MyInstantiationAwareBeanPostProcessor.java
  com.debug.processor.MyInstantiationAwareBeanPostProcessor
 com/debug/service/B.java
  com.debug.service.B
 com/debug/processor/MyBeanFactoryPostProcessors.java
  com.debug.processor.MyBeanFactoryPostProcessors
-com/debug/aware/MyApplicationContextAware.java
- com.debug.aware.MyApplicationContextAware
-com/debug/entity/Red.java
- com.debug.entity.Red
-com/debug/config/MyImportBeanDefinitionRegistry.java
- com.debug.config.MyImportBeanDefinitionRegistry
 com/debug/service/OrderService.java
  com.debug.service.OrderService
 com/debug/service/UserService.java
  com.debug.service.UserService
+com/debug/aop/AopAspect.java
+ com.debug.aop.AopAspect
+com/debug/DebugConfig.java
+ com.debug.DebugConfig
+com/debug/config/AppConfig.java
+ com.debug.config.AppConfig
